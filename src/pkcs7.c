@@ -409,6 +409,11 @@ int pkcs7_verify_unwrap(struct scep *s , char * cachainfile ) {
 		printf("%s: PKCS#7 payload size: %d bytes\n", pname, len);
 	BIO_set_flags(memorybio, BIO_FLAGS_MEM_RDONLY);
 	s->reply_p7 = d2i_PKCS7_bio(memorybio, NULL);
+	if (!s->reply_p7) {
+		fprintf(stderr, "%s: Error in d2i_PKCS7_bio.\n", pname);
+		ERR_print_errors_fp(stderr);
+		exit (SCEP_PKISTATUS_P7);
+	}
 	if (d_flag) {
 		printf("%s: printing PEM fomatted PKCS#7\n", pname);
 		PEM_write_PKCS7(stdout, s->reply_p7);
@@ -530,7 +535,11 @@ int pkcs7_verify_unwrap(struct scep *s , char * cachainfile ) {
 	}
 	/* Copy enveloped data into PKCS#7 */
 	s->reply_p7 = d2i_PKCS7_bio(outbio, NULL);
-
+	if (!s->reply_p7) {
+		fprintf(stderr, "%s: Error in d2i_PKCS7_bio.\n", pname);
+		ERR_print_errors_fp(stderr);
+		exit (SCEP_PKISTATUS_P7);
+	}
 
 	X509_STORE_free(cert_store);
 	X509_STORE_CTX_cleanup(cert_ctx);
