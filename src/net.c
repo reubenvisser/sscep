@@ -80,6 +80,12 @@ send_msg(struct http_reply *http, int do_post, char *scep_operation,
 		rlen += snprintf(http_string+rlen, sizeof(http_string)-rlen,
 				"Content-Length: %zu\r\n", payload_len);
 		exit_string_overflow(sizeof(http_string) <= rlen);
+
+		if (strcmp(scep_operation, "PKIOperation") == 0) {
+			rlen += snprintf(http_string+rlen, sizeof(http_string)-rlen,
+					"Content-Type: application/x-pki-message\r\n");
+			exit_string_overflow(sizeof(http_string) <= rlen);
+		}
 	}
 
 	rlen += snprintf(http_string+rlen, sizeof(http_string)-rlen,
